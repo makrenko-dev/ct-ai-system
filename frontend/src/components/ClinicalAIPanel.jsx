@@ -77,13 +77,12 @@ export default function ClinicalAIPanel() {
   }
 
   const mal = result?.malignant;
-  const malignantPercent =
-    mal?.prob != null ? Math.round(mal.prob * 100) : null;
-    const rawScore =
-    result?.model_output?.model_score != null
-    ? Math.round(result.model_output.model_score * 100)
-    : null;
-
+  const clinicalPercent =
+    mal?.clinical_prob != null ? Math.round(mal.clinical_prob * 100) : null;
+  const combinedPercent =
+    mal?.combined_prob != null ? Math.round(mal.combined_prob * 100) : null;
+  const rawScore =
+    mal?.raw_ai_score != null ? Math.round(mal.raw_ai_score * 100) : null;
 
   const lesionText = {
     0: "Невизначено (клінічних ознак недостатньо)",
@@ -210,101 +209,88 @@ export default function ClinicalAIPanel() {
         </button>
         )}
 
-
-      {result  && isResultOpen &&(
+      {result && isResultOpen && (
         <div className="clinical-result">
 
-            {/* === INSUFFICIENT DATA === */}
-            {result.status === "insufficient_data" && (
+          {/* === INSUFFICIENT DATA === */}
+          {result.status === "insufficient_data" && (
             <div className="result-card error">
-                <div className="result-header">
+              <div className="result-header">
                 <span className="emoji">⚠️</span>
                 <h4>Недостатньо клінічних даних</h4>
-                </div>
-
-                <p className="muted">{result.message}</p>
-                <p className="muted small">{result.recommendation}</p>
+              </div>
+              <p className="muted">{result.message}</p>
             </div>
-            )}
+          )}
 
-            {/* === PARTIAL DATA === */}
-            {result.status === "partial" && (
-                <div className="result-card warning">
-                    <div className="result-header">
-                    <span className="emoji">🟡</span>
-                    <h4>Орієнтовна клінічна оцінка</h4>
-                    </div>
+          {/* === PARTIAL DATA === */}
+          {result.status === "partial" && (
+            <div className="result-card warning">
+              <div className="result-header">
+                <span className="emoji">🟡</span>
+                <h4>Орієнтовна клінічна оцінка</h4>
+              </div>
 
-                    <div className="birads-badge">
-                    BI-RADS {result.malignant.birads_from_symptoms}
-                    </div>
+              <div className="birads-badge">
+                BI-RADS {result.malignant.birads_from_symptoms}
+              </div>
 
-                    <p>
-                    Ймовірність злоякісності:{" "}
-                    <strong>{Math.round(result.malignant.prob * 100)}%</strong>
-                    </p>
+              <p>
+                Ймовірність злоякісності: <strong>{clinicalPercent}%</strong>
+              </p>
 
-                    <p className="muted">
-                    Дані заповнені частково, інтерпретація обмежена.
-                    </p>
+              <p className="muted">
+                Дані заповнені частково, інтерпретація обмежена.
+              </p>
+            </div>
+          )}
 
-                    <p className="muted tiny">
-                    Оцінка базується на клінічній логіці. AI score використовується як допоміжний фактор.
-                    </p>
+          {/* === FULL DATA === */}
+          {result.status === "full" && (
+            <>
+              <div className="result-card">
+                <div className="result-header">
+                  <span className="emoji">🧠</span>
+                  <h4>Клінічний висновок</h4>
                 </div>
+
+                <p>
+                  Клінічний ризик: <strong>{clinicalPercent}%</strong>
+                </p>
+
+                {rawScore !== null && (
+                  <p className="muted tiny">
+                    AI model score (без клінічної інтерпретації): {rawScore}%
+                  </p>
                 )}
 
+                {combinedPercent !== null && (
+                  <p>
+                    <strong>Комбінований ризик:</strong> {combinedPercent}% (BI-RADS {mal.birads_from_combined})
+                  </p>
+                )}
+              </div>
 
-            {/* === FULL DATA === */}
-            {result.status === "full" && (
-            <>
-                <div className="result-card">
+              <div className="result-card">
                 <div className="result-header">
-                    <span className="emoji">🧠</span>
-                    <h4>Клінічний висновок</h4>
-                </div>
-
-                <div className="birads-badge birads-main">
-                    BI-RADS {result.malignant.birads_from_symptoms}
-                </div>
-
-                    <p>
-                    Клінічний ризик злоякісності:{" "}
-                    <strong>{Math.round(result.malignant.prob * 100)}%</strong>{" "}
-                    <span className="muted">
-                        ({result.malignant.label_name})
-                    </span>
-                    </p>
-
-                    {rawScore !== null && (
-                        <p className="muted tiny">
-                            AI model score (без клінічної інтерпретації): {rawScore}%
-                        </p>
-                    )}
-
-                </div>
-
-                <div className="result-card">
-                <div className="result-header">
-                    <span className="emoji">🧩</span>
-                    <h4>Пояснення рішення AI</h4>
+                  <span className="emoji">🧩</span>
+                  <h4>Пояснення рішення AI</h4>
                 </div>
 
                 <p className="muted">{result.explanation.summary}</p>
 
                 <ul className="factor-list">
-                    {result.explanation.key_factors.map((f, i) => (
+                  {result.explanation.key_factors.map((f, i) => (
                     <li key={i}>{f}</li>
-                    ))}
+                  ))}
                 </ul>
 
                 <p className="muted tiny">{result.explanation.note}</p>
-                </div>
+              </div>
             </>
-            )}
+          )}
         </div>
-        )}
-
+      )}
     </div>
   );
 }
