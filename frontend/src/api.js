@@ -1,4 +1,4 @@
-const API_URL = "https://ct-ai-system-demo.onrender.com"; // <- сюда URL Render API
+const API_URL = "https://ct-ai-system.onrender.com"; // <- сюда URL Render API
 
 export async function runPipeline(file) {
   const form = new FormData();
