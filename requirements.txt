@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 onnxruntime
 opencv-python
 numpy
@@ -8,6 +8,7 @@ tqdm
 pydicom
 matplotlib
 torch
+torchvision
 joblib
 pydantic
 lightgbm
