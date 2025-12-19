@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+onnxruntime
+opencv-python
+numpy
+python-multipart
+tqdm
+pydicom
+matplotlib
