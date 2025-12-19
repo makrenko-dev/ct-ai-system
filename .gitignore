@@ -8,13 +8,6 @@ datasets/
 data/
 *.zip
 
-# ML models / weights
-*.onnx
-*.pth
-*.pt
-*.pkl
-*.joblib
-
 # Debug / cache
 debug/
 logs/

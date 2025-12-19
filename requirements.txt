@@ -10,3 +10,4 @@ matplotlib
 torch
 joblib
 pydantic
+lightgbm
