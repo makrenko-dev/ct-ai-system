@@ -11,3 +11,4 @@ torch
 joblib
 pydantic
 lightgbm
+scikit-learn
